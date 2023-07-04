@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AJAX DataTable with JSON</title>
+  <link rel="stylesheet" type="text/css" href="table.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    <div class="my-container">
+        <div class="my-div">
+            <!-- Content of the div goes here -->
+            <div class="task-bar">
+                <div class="taskbar-head"><b>Monitor Console</b> </div>
+                <!-- Task bar operations -->
+                <div class="buttons">
+                    <button class="button"><i class="far fa-arrows-alt"></i></button>
+                    <button class="button"><i class="fas fa-window-minimize"></i></button>
+                    <button class="button"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+
+            <table id="productTable" class="display">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Time</th>
+                        <th>Type</th>
+                        <th>Logs</th>
+                        <th>Events</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var table = $('#productTable').DataTable({
+                ajax: {
+                    url: 'https://jsonplaceholder.typicode.com/comments', // Path to your JSON file
+                    dataSrc: ''
+                },
+                deferRender: true,
+                scrollY: '50vh', // Set the height of the scrollable area
+                scrollCollapse: true, // Enable collapsing of the table when scrolling
+                paging: false, // Disable pagination
+                info: false, // Hide the "Showing X of X entries" info
+                searching: true, // Show the search box
+                ordering: true, // Disable column sorting
+                createdRow: function(row, data, dataIndex) {
+                    // Callback function called for each created row
+                    if (dataIndex % 100 === 0) {
+                        // Load more data when reaching every 100th row
+                        table.ajax.reload(null, false);
+                    }
+                },
+                initComplete: function() {
+                    // Add the icon to the search input
+                    var searchInput = $('.dataTables_filter input');
+                    searchInput.attr('placeholder', 'Search Logs');
+                },
+                columns: [
+								{ data: "postId" },
+
+								{ data: "id" },
+
+								{ data: "name" },
+
+								{data: "email"},
+
+								{ data: "body" }
+                ]
+            });
+						$("#productTable").on("scroll", function() {
+							var scrollThreshold = 50; // Adjust this value as needed
+
+							if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight - scrollThreshold) {
+								table.ajax.reload();
+							}
+						});
+
+        });
+    </script>
+</body>
+</html>
